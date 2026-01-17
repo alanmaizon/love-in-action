@@ -14,6 +14,12 @@ import Dashboard from './pages/Dashboard';
 import CreateEvent from './pages/CreateEvent';
 import ManageEvent from './pages/ManageEvent';
 
+// Legal Pages
+import TermsOfService from './pages/legal/TermsOfService';
+import PrivacyPolicy from './pages/legal/PrivacyPolicy';
+import RefundPolicy from './pages/legal/RefundPolicy';
+import CookiePolicy from './pages/legal/CookiePolicy';
+
 function App() {
   return (
     <AuthProvider>
@@ -27,6 +33,12 @@ function App() {
             <Route path="/donate/:slug/success" element={<DonationSuccess />} />
             <Route path="/charities" element={<CharitiesPage />} />
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Legal Pages */}
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/refunds" element={<RefundPolicy />} />
+            <Route path="/cookies" element={<CookiePolicy />} />
 
             {/* Protected Routes */}
             <Route

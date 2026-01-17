@@ -36,3 +36,6 @@ django-csp>=3.8
 
 # Health checks
 django-health-check>=3.17.0
+
+# Social Authentication
+django-allauth>=65.0.0

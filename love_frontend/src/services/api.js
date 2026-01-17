@@ -50,6 +50,16 @@ export const logout = () =>
 export const getMe = () =>
   api.get('/auth/me/');
 
+// Social Auth
+export const getSocialProviders = () =>
+  api.get('/auth/social/providers/');
+
+// Helper to get the social login URL
+export const getSocialLoginUrl = (provider) => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  return `${API_URL}/accounts/${provider}/login/`;
+};
+
 // Events (public)
 export const getEvent = (slug) =>
   api.get(`/events/${slug}/`);

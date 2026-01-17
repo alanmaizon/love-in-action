@@ -21,9 +21,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for allauth
     # Third party
     'rest_framework',
     'corsheaders',
+    # Allauth (social authentication)
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     # Health checks
     'health_check',
     'health_check.db',
@@ -34,6 +40,8 @@ INSTALLED_APPS = [
     'charities',
     'donations',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -46,6 +54,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Required for allauth
+]
+
+# =============================================================================
+# Authentication Backends
+# =============================================================================
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default Django backend
+    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
 ]
 
 ROOT_URLCONF = 'love_backend.urls'
@@ -339,3 +356,38 @@ if SENTRY_DSN and not DEBUG:
         send_default_pii=False,
         environment=os.environ.get('ENVIRONMENT', 'production'),
     )
+
+# =============================================================================
+# Django Allauth Configuration
+# =============================================================================
+ACCOUNT_LOGIN_ON_GET = True  # Auto-process social login without confirm page
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Skip email verification for social accounts
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+
+# New allauth v65+ settings (replacing deprecated ones)
+ACCOUNT_LOGIN_METHODS = {'email'}  # Login via email
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Email required, no username
+
+# Redirect URLs after social login
+LOGIN_REDIRECT_URL = '/social-callback'  # Frontend handles this
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+# Social account settings
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Auto-create account on first social login
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True  # Allow login via email match
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True  # Link social to existing account
+
+# Provider-specific settings (Google only)
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID', ''),
+            'secret': os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+            'key': ''
+        }
+    },
+}

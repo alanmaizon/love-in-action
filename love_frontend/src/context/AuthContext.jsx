@@ -36,11 +36,24 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    try {
+      await getCsrfToken();
+      const response = await getMe();
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      setUser(null);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     loading,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!user,
   };
 
