@@ -1,4 +1,25 @@
-# CLAUDE.md - Love That Gives Back Platform Rebuild
+# CLAUDE.md - Love That Gives Back Platform
+
+## Quick Start
+
+```bash
+# Backend
+cd love_backend
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_charities
+python manage.py createsuperuser
+python manage.py runserver
+
+# Frontend (in another terminal)
+cd love_frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 for the frontend and http://localhost:8000/admin for Django admin.
+
+---
 
 ## Project Overview
 
@@ -603,16 +624,3 @@ git push origin main  # If Render auto-deploys from GitHub
 4. **Test with real Stripe** — Use test mode but go through full flow
 5. **Alan's christening is the first real event** — End of March deadline
 
-## First Event Test Data
-```python
-# Alan's christening page
-Event.objects.create(
-    user=alan_user,
-    slug='welcome-baby-maizon',
-    event_type='christening',
-    title='Welcome Baby Maizon',
-    story='We are overjoyed to welcome our baby girl! Instead of traditional gifts, we invite you to support causes close to our hearts.',
-    event_date='2026-03-30',  # Adjust to actual date
-    status='active'
-)
-```

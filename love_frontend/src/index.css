@@ -1,271 +1,68 @@
-/* 🎨 General Reset */
-@font-face {
-  font-family: 'Cormorant';
-  src: url('../public/Cormorant.ttf') format('truetype');
-}
+/* Custom styles for Love That Gives Back */
 
-@font-face {
-  font-family: 'Montserrat';
-  src: url('../public/Montserrat.ttf') format('truetype');
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cormorant', serif;
-}
-
-body, p, a, input, textarea, button {
-  font-family: 'Montserrat', sans-serif;
-}
-
-html, body, #root {
+body {
   margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  width: 100%;
-  background-color: #5A3E2B; /* Medium Brown */
-  overflow-x: hidden; /* Prevents horizontal scrolling */
-  overflow-y: auto;
-  color: #EAD7BB; /* Soft Beige */
-  
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* 🎨 Root Container */
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+/* Primary brand color */
+:root {
+  --bs-primary: #6366f1;
+  --bs-primary-rgb: 99, 102, 241;
 }
 
-/* 🎨 Header */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  width: 100%;
-  background: linear-gradient(90deg, #3D2C1E, #5A3E2B); /* Dark Brown Gradient */
-  background-size: contain, contain;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.navbar .navbar-brand {
-  color: #EAD7BB !important;
-  font-family: 'Cormorant';
-}
-
-.navbar .navbar-nav .nav-link {
-  color: #EAD7BB !important;
-  transition: color 0.3s ease;
-}
-
-.navbar .navbar-nav .nav-link:hover {
-  color: #A67B5B !important; /* Warm Coffee */
-}
-
-/* 🎨 Main Content */
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 100vh;
-}
-
-/* 🎨 Footer */
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  background: #3D2C1E; /* Dark Brown */
-  background-image: url('../public/1.svg');
-  background-repeat: no-repeat;
-  background-position: bottom 0 left 20px;
-  background-size: contain;
-  color: #EAD7BB;
-  text-align: center;
-  padding: 15px;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-}
-
-.footer-links {
-  font-size: 12px; /* Smaller font size for the links */
-}
-
-.footer-link {
-  color: #A67B5B;
-  text-decoration: none;
-}
-
-.footer-link:hover {
-  text-decoration: underline;
-}
-
-/* 🎨 Buttons */
 .btn-primary {
-  background-color: #8B5E3B !important; /* Accent Brown */
-  border-color: #8B5E3B !important;
+  --bs-btn-bg: #6366f1;
+  --bs-btn-border-color: #6366f1;
+  --bs-btn-hover-bg: #4f46e5;
+  --bs-btn-hover-border-color: #4f46e5;
 }
 
-.btn-primary:hover {
-  background-color: #A67B5B !important; /* Warm Coffee */
-  border-color: #A67B5B !important;
+.btn-outline-primary {
+  --bs-btn-color: #6366f1;
+  --bs-btn-border-color: #6366f1;
+  --bs-btn-hover-bg: #6366f1;
+  --bs-btn-hover-border-color: #6366f1;
 }
 
-
-/* 🎨 Links */
-a {
-  color: #A67B5B;
-  text-decoration: none;
+.bg-primary {
+  background-color: #6366f1 !important;
 }
 
-a:hover {
-  color: #EAD7BB;
-  text-decoration: underline;
+.text-primary {
+  color: #6366f1 !important;
 }
 
-/* 🎨 Forms & Inputs */
-input, textarea {
-  background-color: #EAD7BB;
-  color: #3D2C1E;
-  border: 1px solid #A67B5B;
-  padding: 10px;
-  border-radius: 5px;
+.border-primary {
+  border-color: #6366f1 !important;
 }
 
-input:focus, textarea:focus {
-  border-color: #8B5E3B;
-  outline: none;
+.progress-bar {
+  background-color: #6366f1;
 }
 
-/* Center the form container and limit its width */
-form {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-/* Optional: Add some spacing between form elements */
-form .form-group {
-  margin-bottom: 1rem;
-}
-
-/* 🎨 Cards & Containers */
+/* Cards */
 .card {
-  background-color: #3D2C1E;
-  color: #EAD7BB;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  margin-bottom: 20px;
+  border-radius: 0.5rem;
+  border-color: #e5e7eb;
 }
 
-/* 🎨 Layout Fixes */
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
+/* Navbar */
+.navbar-brand {
+  font-weight: 700;
 }
 
-/* 🎨 Spacing Adjustments */
-.mt-5 {
-  margin-top: 50px !important;
+/* Footer */
+footer {
+  background-color: #1f2937 !important;
 }
 
-.pt-5 {
-  padding-top: 50px !important;
+/* Smooth transitions */
+.btn, .card, .nav-link {
+  transition: all 0.2s ease-in-out;
 }
 
-.pb-5 {
-  padding-bottom: 50px !important;
-}
-
-.hero-section {
-  padding: 50px 0; /* Adjust padding as needed */
-  color: #EAD7BB; /* Soft Beige */
-}
-
-.hero-image {
-  height: 300px; /* Adjust height as needed */
-  background-image: url('../public/texture.jpg'), url('../public/hero.png');
-  background-repeat: no-repeat, no-repeat;
-  background-position: center center, center center;
-  background-size: cover, contain;
-  background-blend-mode: overlay; /* Ensure hero image is on a higher layer */
-  border-radius: 5px;
-}
-
-.bio-top-section {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  margin-bottom: 3rem;
-}
-
-.bio-images,
-.bio-text {
-  flex: 1;
-}
-
-.scroll-to-top {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background-color: #8B5E3B; /* Accent Brown */
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 24px;
-  font-weight: bold;
+/* Custom cursor for clickable cards */
+.cursor-pointer {
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  transform: translateY(100px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-
-  /* Center the icon perfectly */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1;
-}
-
-/* When visible */
-.scroll-to-top.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Hover effect */
-.scroll-to-top:hover {
-  background-color: #A67B5B; /* Lighter Brown */
-}
-
-/* 🎨 Responsive Fixes */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 10px;
-  }
-
-  .bio-top-section {
-    flex-direction: column-reverse;
-  }
-
-
-  footer {
-    font-size: 12px;
-    padding: 8px 0;
-  }
-
-  .container {
-    padding: 10px;
-  }
-
-  .scroll-to-top {
-    width: 45px;
-    height: 45px;
-    font-size: 22px;
-    bottom: 15px; /* Adjust position slightly */
-    right: 15px;
-  }
 }

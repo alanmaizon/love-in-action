@@ -1,60 +1,62 @@
-// src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
-import axiosInstance from '../api/axiosInstance';
+import { createContext, useState, useEffect, useContext } from 'react';
+import { getMe, login as loginApi, logout as logoutApi, getCsrfToken } from '../services/api';
 
-export const AuthContext = createContext(null);
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [authUser, setAuthUser] = useState(null);
-  const [publicProfile, setPublicProfile] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Listen for login/logout events between open tabs
   useEffect(() => {
-    const channel = new BroadcastChannel('auth_channel');
-    channel.onmessage = (e) => {
-      if (e.data.type === 'LOGOUT') {
-        setAuthUser(null);
-      } else if (e.data.type === 'LOGIN') {
-        setAuthUser(e.data.payload);
-      }
-    };
-    return () => {
-      channel.close();
-    };
+    initializeAuth();
   }, []);
 
-  // Check for an authenticated session on mount
-  useEffect(() => {
-    const loggedOut = localStorage.getItem('loggedOut');
-    if (!loggedOut) {
-      axiosInstance.get('/profile/')
-        .then((res) => {
-          const displayName = `${res.data.bride_name} & ${res.data.groom_name}`;
-          setAuthUser({ username: displayName, ...res.data });
-        })
-        .catch(() => {
-          setAuthUser(null);
-        });
-    } else {
-      setAuthUser(null);
+  const initializeAuth = async () => {
+    try {
+      // First, get CSRF token to ensure cookie is set
+      await getCsrfToken();
+      // Then check if user is authenticated
+      const response = await getMe();
+      setUser(response.data);
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // Optionally, still fetch public profile data
-  useEffect(() => {
-    axiosInstance.get('/public_profile/')
-      .then((res) => {
-        const profileData = { ...res.data, isPublic: true };
-        setPublicProfile(profileData);
-      })
-      .catch(() => {
-        setPublicProfile(null);
-      });
-  }, []);
+  const login = async (username, password) => {
+    const response = await loginApi(username, password);
+    setUser(response.data);
+    return response.data;
+  };
+
+  const logout = async () => {
+    await logoutApi();
+    setUser(null);
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    isAuthenticated: !!user,
+  };
 
   return (
-    <AuthContext.Provider value={{ authUser, setAuthUser, publicProfile }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
+
+export default AuthContext;

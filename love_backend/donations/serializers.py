@@ -1,73 +1,51 @@
 from rest_framework import serializers
-from .models import Profile, Charity, Donation
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    profile_picture_url = serializers.SerializerMethodField()
-    isAdmin = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Profile
-        fields = [
-            'id', 
-            'bride_name', 
-            'groom_name', 
-            'wedding_date', 
-            'bio', 
-            'location', 
-            'profile_picture_url',
-            'bank_name', 
-            'account_number', 
-            'revolut_username',
-            'isAdmin',
-        ]
-
-    def get_profile_picture_url(self, obj):
-        return obj.get_profile_picture_url() or ""
-
-    def get_isAdmin(self, obj):
-        # Assumes that the Profile is linked to a User instance.
-        return obj.user.is_staff  # or obj.user.is_superuser if you prefer
-    
-
-class CharitySerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Charity model.
-    It exposes the basic details of each charity.
-    """
-    class Meta:
-        model = Charity
-        fields = ['id', 'name', 'description', 'website', 'logo']
-
+from .models import Donation
+from charities.serializers import CharityListSerializer
 
 
 class DonationSerializer(serializers.ModelSerializer):
+    charity = CharityListSerializer(read_only=True)
+    charity_id = serializers.IntegerField(write_only=True)
+    event_slug = serializers.SlugRelatedField(
+        source='event',
+        slug_field='slug',
+        read_only=True
+    )
+
     class Meta:
         model = Donation
         fields = [
-            'id',
-            'user',
-            'charity',
-            'donor_name',
-            'donor_email',
-            'amount',
-            'message',
-            'status',
-            'created_at',
-            'updated_at',
+            'id', 'event_slug', 'charity', 'charity_id', 'donor_name',
+            'donor_email', 'amount', 'currency', 'message', 'is_anonymous',
+            'status', 'created_at'
         ]
-        read_only_fields = ['user', 'status', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'status', 'created_at']
 
-    def create(self, validated_data):
-        request = self.context.get('request')
-        # If the user is authenticated, assign them; otherwise, leave user as None.
-        if request and request.user and request.user.is_authenticated:
-            validated_data['user'] = request.user
-        else:
-            validated_data['user'] = None
-        return super().create(validated_data)
 
-    def validate_amount(self, value):
-        if value <= 0:
-            raise serializers.ValidationError("Donation amount must be greater than zero.")
-        return value
+class DonationListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing donations"""
+    charity_name = serializers.CharField(source='charity.name', read_only=True)
+    display_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Donation
+        fields = [
+            'id', 'donor_name', 'display_name', 'charity_name',
+            'amount', 'message', 'is_anonymous', 'status', 'created_at'
+        ]
+
+    def get_display_name(self, obj):
+        if obj.is_anonymous:
+            return 'Anonymous'
+        return obj.donor_name
+
+
+class CreateDonationSessionSerializer(serializers.Serializer):
+    """Serializer for creating Stripe checkout session"""
+    event_slug = serializers.CharField()
+    charity_id = serializers.IntegerField()
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=1)
+    donor_name = serializers.CharField(max_length=200, required=False, default='Anonymous')
+    donor_email = serializers.EmailField(required=False, allow_blank=True)
+    message = serializers.CharField(required=False, allow_blank=True, default='')
+    is_anonymous = serializers.BooleanField(required=False, default=False)

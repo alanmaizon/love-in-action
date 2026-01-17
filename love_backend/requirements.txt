@@ -1,31 +1,38 @@
-asgiref==3.8.1
-contourpy==1.3.1
-cycler==0.12.1
-Django==5.1.6
-django-cors-headers==4.7.0
-djangorestframework==3.15.2
-dotenv==0.9.9
-fonttools==4.56.0
-kiwisolver==1.4.8
-matplotlib==3.10.1
-numpy==2.2.3
-packaging==24.2
-pillow==11.1.0
-psycopg2-binary==2.9.10
-pyparsing==3.2.1
-python-dateutil==2.9.0.post0
-django-environ
-requests
-six==1.17.0
-sqlparse==0.5.3
-tzdata==2025.1
-dj_database_url==0.5.0
-gunicorn==20.1.0
-whitenoise==6.0.0
-cloudinary 
-django-cloudinary-storage
-dotenv
-google-api-python-client
-google-auth
-google-auth-httplib2
-google-auth-oauthlib
+# Django
+Django>=5.1.0
+djangorestframework>=3.15.0
+django-cors-headers>=4.0.0
+
+# Database
+psycopg2-binary>=2.9.0
+dj-database-url>=2.0.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Payments
+stripe>=7.0.0
+
+# Production server
+gunicorn>=21.0.0
+whitenoise>=6.0.0
+
+# Caching
+django-redis>=5.4.0
+redis>=5.0.0
+
+# Background tasks
+celery>=5.3.0
+django-celery-beat>=2.5.0
+
+# Rate limiting
+django-ratelimit>=4.1.0
+
+# Monitoring & Logging
+sentry-sdk>=1.40.0
+
+# Security
+django-csp>=3.8
+
+# Health checks
+django-health-check>=3.17.0
