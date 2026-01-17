@@ -61,37 +61,37 @@ function Footer() {
         <div className="row">
           <div className="col-md-4 mb-3 mb-md-0">
             <h5 className="fw-bold">Love That Gives Back</h5>
-            <p className="small text-muted mb-0">
+            <p className="small text-light mb-0">
               Celebrating life's moments through charitable giving.
             </p>
           </div>
           <div className="col-md-4 mb-3 mb-md-0">
             <h6>Quick Links</h6>
-            <ul className="list-unstyled small">
-              <li><Link to="/charities" className="text-muted text-decoration-none">Our Charities</Link></li>
-              <li><Link to="/login" className="text-muted text-decoration-none">Host an Event</Link></li>
+            <ul className="list-unstyled small ">
+              <li><Link to="/charities" className="text-light text-decoration-none">Our Charities</Link></li>
+              <li><Link to="/login" className="text-light text-decoration-none">Host an Event</Link></li>
             </ul>
           </div>
           <div className="col-md-4">
             <h6>Legal</h6>
             <ul className="list-unstyled small">
-              <li><Link to="/terms" className="text-muted text-decoration-none">Terms of Service</Link></li>
-              <li><Link to="/privacy" className="text-muted text-decoration-none">Privacy Policy</Link></li>
-              <li><Link to="/refunds" className="text-muted text-decoration-none">Refund Policy</Link></li>
-              <li><Link to="/cookies" className="text-muted text-decoration-none">Cookie Policy</Link></li>
+              <li><Link to="/terms" className="text-light text-decoration-none">Terms of Service</Link></li>
+              <li><Link to="/privacy" className="text-light text-decoration-none">Privacy Policy</Link></li>
+              <li><Link to="/refunds" className="text-light text-decoration-none">Refund Policy</Link></li>
+              <li><Link to="/cookies" className="text-light text-decoration-none">Cookie Policy</Link></li>
             </ul>
           </div>
         </div>
         <hr className="my-3 border-secondary" />
         <div className="row align-items-center">
           <div className="col-md-6 text-center text-md-start">
-            <small className="text-muted">
+            <small className="text-light">
               &copy; {new Date().getFullYear()} Love That Gives Back. All rights reserved.
             </small>
           </div>
           <div className="col-md-6 text-center text-md-end">
-            <small className="text-muted">
-              Contact: <a href="mailto:alanmaizon@icloud.com" className="text-muted">alanmaizon@icloud.com</a>
+            <small className="text-light">
+              Contact: <a href="mailto:alanmaizon@icloud.com" className="text-light">alanmaizon@icloud.com</a>
             </small>
           </div>
         </div>
