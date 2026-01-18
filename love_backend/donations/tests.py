@@ -170,6 +170,9 @@ class CreateDonationSessionTest(APITestCase):
 
     def setUp(self):
         self.client = APIClient()
+        # Clear any cached throttle data
+        from django.core.cache import cache
+        cache.clear()
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
@@ -256,7 +259,8 @@ class CreateDonationSessionTest(APITestCase):
             'donor_email': 'donor@example.com'
         })
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('Minimum', response.data.get('error', ''))
+        # Validation error comes from serializer's min_value constraint
+        self.assertIn('amount', response.data)
 
     def test_amount_above_maximum_returns_400(self):
         """Test that amount above €100,000 returns 400"""
@@ -432,7 +436,11 @@ class CreateDonationSessionTest(APITestCase):
         self.assertEqual(donation.status, 'failed')
 
 
-@override_settings(STRIPE_WEBHOOK_SECRET='whsec_test_secret')
+@override_settings(
+    STRIPE_WEBHOOK_SECRET='whsec_test_secret',
+    CELERY_TASK_ALWAYS_EAGER=True,
+    CELERY_TASK_EAGER_PROPAGATES=True,
+)
 class StripeWebhookTest(APITestCase):
     """Tests for stripe_webhook (POST /api/webhooks/stripe/)"""
 
@@ -494,6 +502,7 @@ class StripeWebhookTest(APITestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    @patch.dict('sys.modules', {'donations.tasks': MagicMock()})
     @patch('stripe.Webhook.construct_event')
     def test_checkout_completed_updates_donation_status(self, mock_construct):
         """Test checkout.session.completed updates donation to succeeded"""
@@ -522,6 +531,7 @@ class StripeWebhookTest(APITestCase):
         self.donation.refresh_from_db()
         self.assertEqual(self.donation.status, 'succeeded')
 
+    @patch.dict('sys.modules', {'donations.tasks': MagicMock()})
     @patch('stripe.Webhook.construct_event')
     def test_checkout_completed_stores_payment_intent(self, mock_construct):
         """Test checkout.session.completed stores payment_intent"""
