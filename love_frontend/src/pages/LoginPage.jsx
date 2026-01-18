@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getSocialProviders, getSocialLoginUrl } from '../services/api';
 
@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [socialProviders, setSocialProviders] = useState([]);
   const [loadingProviders, setLoadingProviders] = useState(true);
 
-  const { login, refreshUser } = useAuth();
+  const { login, refreshUser, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -54,6 +54,11 @@ export default function LoginPage() {
     };
     fetchProviders();
   }, []);
+
+  // Redirect authenticated users to dashboard (after all hooks)
+  if (!authLoading && isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

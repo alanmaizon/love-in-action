@@ -22,6 +22,8 @@ describe('LoginPage', () => {
     AuthContext.useAuth.mockReturnValue({
       login: vi.fn(),
       refreshUser: vi.fn(),
+      isAuthenticated: false,
+      loading: false,
     });
     api.getSocialProviders.mockResolvedValue({ data: { providers: [] } });
   });
@@ -69,6 +71,8 @@ describe('LoginPage', () => {
     AuthContext.useAuth.mockReturnValue({
       login: mockLogin,
       refreshUser: vi.fn(),
+      isAuthenticated: false,
+      loading: false,
     });
 
     renderLoginPage();
@@ -97,6 +101,8 @@ describe('LoginPage', () => {
     AuthContext.useAuth.mockReturnValue({
       login: mockLogin,
       refreshUser: vi.fn(),
+      isAuthenticated: false,
+      loading: false,
     });
 
     renderLoginPage();
@@ -122,6 +128,8 @@ describe('LoginPage', () => {
     AuthContext.useAuth.mockReturnValue({
       login: mockLogin,
       refreshUser: vi.fn(),
+      isAuthenticated: false,
+      loading: false,
     });
 
     renderLoginPage();
@@ -148,5 +156,19 @@ describe('LoginPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/Social login failed/i)).toBeInTheDocument();
     });
+  });
+
+  it('redirects to dashboard when already authenticated', () => {
+    AuthContext.useAuth.mockReturnValue({
+      login: vi.fn(),
+      refreshUser: vi.fn(),
+      isAuthenticated: true,
+      loading: false,
+    });
+
+    renderLoginPage();
+
+    // Should not render login form
+    expect(screen.queryByRole('button', { name: 'Login' })).not.toBeInTheDocument();
   });
 });
