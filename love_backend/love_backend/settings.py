@@ -376,6 +376,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # Social account settings
 SOCIALACCOUNT_AUTO_SIGNUP = True  # Auto-create account on first social login
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Skip the intermediate "Continue" page - redirect directly to Google
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True  # Allow login via email match
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True  # Link social to existing account
 

@@ -39,3 +39,7 @@ django-health-check>=3.17.0
 
 # Social Authentication
 django-allauth>=65.0.0
+
+# Testing
+factory-boy>=3.3.0
+coverage>=7.0.0
