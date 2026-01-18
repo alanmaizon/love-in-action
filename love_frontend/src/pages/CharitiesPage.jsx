@@ -95,7 +95,7 @@ export default function CharitiesPage() {
                 </div>
                 <div className="card-footer bg-transparent">
                   <a
-                    href={charity.website || `#`}
+                    href={charity.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-sm btn-outline-primary"

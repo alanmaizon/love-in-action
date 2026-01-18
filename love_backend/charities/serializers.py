@@ -17,4 +17,4 @@ class CharityListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for listing charities"""
     class Meta:
         model = Charity
-        fields = ['id', 'name', 'slug', 'logo', 'category', 'is_verified']
+        fields = ['id', 'name', 'slug', 'logo', 'website', 'category', 'is_verified']
