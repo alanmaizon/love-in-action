@@ -1,57 +1,98 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import { getMe, login as loginApi, logout as logoutApi, getCsrfToken } from '../services/api';
+import {
+  initCognito,
+  signIn as cognitoSignIn,
+  signUp as cognitoSignUp,
+  confirmSignUp as cognitoConfirmSignUp,
+  signOut as cognitoSignOut,
+  getCurrentSession,
+  getIdToken,
+} from '../services/cognito';
+import { getCognitoConfig, getMe } from '../services/api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cognitoReady, setCognitoReady] = useState(false);
 
+  // Initialize Cognito on mount
   useEffect(() => {
     initializeAuth();
   }, []);
 
   const initializeAuth = async () => {
     try {
-      // First, get CSRF token to ensure cookie is set
-      await getCsrfToken();
-      // Then check if user is authenticated
-      const response = await getMe();
-      setUser(response.data);
+      // Fetch Cognito config from backend
+      const configRes = await getCognitoConfig();
+      const config = configRes.data;
+
+      // Initialize the Cognito SDK with User Pool config
+      initCognito(config);
+      setCognitoReady(true);
+
+      // Check if user already has a valid session (e.g. page refresh)
+      const session = await getCurrentSession();
+      if (session) {
+        await loadUserProfile();
+      }
     } catch (error) {
-      setUser(null);
+      console.error('Failed to initialize auth:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = async (username, password) => {
-    const response = await loginApi(username, password);
-    setUser(response.data);
-    return response.data;
+  const loadUserProfile = async () => {
+    try {
+      // Get user info from our backend (validates token server-side)
+      const response = await getMe();
+      setUser(response.data);
+    } catch (error) {
+      // Token might be invalid on server side
+      console.error('Failed to load user profile:', error);
+      cognitoSignOut();
+      setUser(null);
+    }
   };
 
-  const logout = async () => {
-    await logoutApi();
+  const login = async (email, password) => {
+    await cognitoSignIn(email, password);
+    await loadUserProfile();
+  };
+
+  const signup = async (email, password, firstName, lastName) => {
+    const result = await cognitoSignUp(email, password, firstName, lastName);
+    return result;
+  };
+
+  const confirmSignup = async (email, code) => {
+    const result = await cognitoConfirmSignUp(email, code);
+    return result;
+  };
+
+  const logout = () => {
+    cognitoSignOut();
     setUser(null);
   };
 
   const refreshUser = async () => {
-    try {
-      await getCsrfToken();
-      const response = await getMe();
-      setUser(response.data);
-      return response.data;
-    } catch (error) {
+    const session = await getCurrentSession();
+    if (session) {
+      await loadUserProfile();
+    } else {
       setUser(null);
-      throw error;
     }
   };
 
   const value = {
     user,
     loading,
+    cognitoReady,
     login,
+    signup,
+    confirmSignup,
     logout,
     refreshUser,
     isAuthenticated: !!user,

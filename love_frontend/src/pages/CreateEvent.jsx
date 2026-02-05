@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCharities, createEvent } from '../services/api';
+import { getCharities, createEvent, getUploadUrl } from '../services/api';
 import { FaHeart, FaGift, FaBirthdayCake, FaDove } from 'react-icons/fa';
 
 const EVENT_TYPES = [
@@ -16,6 +16,8 @@ export default function CreateEvent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [step, setStep] = useState(1);
+
+  const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     event_type: '',
@@ -57,6 +59,33 @@ export default function CreateEvent() {
       title,
       slug: generateSlug(title),
     }));
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      // Step 1: Get a presigned URL from our backend
+      const response = await getUploadUrl(file.name, file.type);
+      const { upload_url, file_url } = response.data;
+
+      // Step 2: Upload directly to S3 using the presigned URL
+      await fetch(upload_url, {
+        method: 'PUT',
+        body: file,
+        headers: { 'Content-Type': file.type },
+      });
+
+      // Step 3: Save the S3 URL in the form
+      setFormData(prev => ({ ...prev, cover_photo: file_url }));
+    } catch (err) {
+      console.error('Upload failed:', err);
+      setError('Failed to upload photo. You can still paste a URL instead.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const toggleCharity = (id) => {
@@ -223,10 +252,33 @@ export default function CreateEvent() {
                     </div>
 
                     <div className="mb-3">
-                      <label className="form-label">Cover Photo URL</label>
+                      <label className="form-label">Cover Photo</label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                      />
+                      {uploading && (
+                        <div className="form-text text-primary">Uploading to S3...</div>
+                      )}
+                      {formData.cover_photo && (
+                        <div className="mt-2">
+                          <img
+                            src={formData.cover_photo}
+                            alt="Cover preview"
+                            className="img-thumbnail"
+                            style={{ maxHeight: 120 }}
+                          />
+                        </div>
+                      )}
+                      <div className="form-text">
+                        Or paste a URL directly:
+                      </div>
                       <input
                         type="url"
-                        className="form-control"
+                        className="form-control mt-1"
                         value={formData.cover_photo}
                         onChange={(e) => setFormData(prev => ({ ...prev, cover_photo: e.target.value }))}
                         placeholder="https://..."

@@ -97,6 +97,15 @@ def create_donation_session(request):
 
     logger.info(f"Created pending donation {donation.id} for event {event.slug}")
 
+    # Log to DynamoDB activity log
+    from .activity_log import log_activity
+    log_activity(event.id, 'donation_created', {
+        'donation_id': donation.id,
+        'charity': charity.name,
+        'amount': float(data['amount']),
+        'donor': data.get('donor_name', 'Anonymous'),
+    })
+
     try:
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
@@ -191,14 +200,17 @@ def stripe_webhook(request):
                 # Invalidate event cache
                 cache.delete(f'event_{donation.event.slug}')
 
-                # Send emails via Celery (if configured)
-                try:
-                    from .tasks import send_donation_confirmation_email, send_host_notification_email
-                    send_donation_confirmation_email.delay(donation_id)
-                    send_host_notification_email.delay(donation_id)
-                except ImportError:
-                    # Celery not configured, send synchronously
-                    logger.info("Celery not available, skipping async email")
+                # Publish to SQS for async email processing (Lambda)
+                from .sqs_publisher import publish_donation_notification
+                publish_donation_notification(donation_id, 'donation_succeeded')
+
+                # Log to DynamoDB activity log
+                from .activity_log import log_activity
+                log_activity(donation.event_id, 'donation_succeeded', {
+                    'donation_id': donation_id,
+                    'amount': float(donation.amount),
+                    'charity': donation.charity.name,
+                })
 
             except Donation.DoesNotExist:
                 logger.error(f"Donation {donation_id} not found")

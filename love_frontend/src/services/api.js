@@ -1,64 +1,31 @@
 import axios from 'axios';
+import { getIdToken } from './cognito';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// Helper to get CSRF token from cookies
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-
 const api = axios.create({
   baseURL: `${API_URL}/api`,
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add CSRF token to all non-GET requests
-api.interceptors.request.use((config) => {
-  if (['post', 'put', 'patch', 'delete'].includes(config.method)) {
-    const csrfToken = getCookie('csrftoken');
-    if (csrfToken) {
-      config.headers['X-CSRFToken'] = csrfToken;
-    }
+// Add Cognito JWT token to all requests (replaces CSRF cookie approach)
+api.interceptors.request.use(async (config) => {
+  const token = await getIdToken();
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;
 });
 
-// Auth
-export const getCsrfToken = () =>
-  api.get('/auth/csrf/');
+// Auth - Cognito config
+export const getCognitoConfig = () =>
+  api.get('/auth/cognito-config/');
 
-export const login = (username, password) =>
-  api.post('/auth/login/', { username, password });
-
-export const logout = () =>
-  api.post('/auth/logout/');
-
+// User profile (authenticated via Cognito JWT)
 export const getMe = () =>
   api.get('/auth/me/');
-
-// Social Auth
-export const getSocialProviders = () =>
-  api.get('/auth/social/providers/');
-
-// Helper to get the social login URL
-export const getSocialLoginUrl = (provider) => {
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-  return `${API_URL}/accounts/${provider}/login/`;
-};
 
 // Events (public)
 export const getEvent = (slug) =>
@@ -77,7 +44,7 @@ export const getCharity = (slug) =>
 export const createDonationSession = (data) =>
   api.post('/donations/create-session/', data);
 
-// Dashboard (authenticated)
+// Dashboard (authenticated via Cognito JWT)
 export const getDashboardEvents = () =>
   api.get('/dashboard/events/');
 
@@ -95,5 +62,9 @@ export const deleteEvent = (id) =>
 
 export const getEventDonations = (id) =>
   api.get(`/dashboard/events/${id}/donations/`);
+
+// S3 Upload (Phase 2)
+export const getUploadUrl = (filename, contentType) =>
+  api.post('/dashboard/upload/', { filename, content_type: contentType });
 
 export default api;

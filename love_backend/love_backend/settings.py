@@ -8,6 +8,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load .env file from the project root (love_backend/)
 load_dotenv(BASE_DIR / '.env')
 
+# Load secrets from AWS Parameter Store (if enabled)
+# This must run BEFORE any os.environ.get() calls below
+from love_backend.aws_config import load_parameters_from_ssm
+load_parameters_from_ssm()
+
 # Security
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
@@ -21,15 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # Required for allauth
     # Third party
     'rest_framework',
     'corsheaders',
-    # Allauth (social authentication)
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     # Health checks
     'health_check',
     'health_check.db',
@@ -40,8 +39,6 @@ INSTALLED_APPS = [
     'charities',
     'donations',
 ]
-
-SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -54,15 +51,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # Required for allauth
 ]
 
 # =============================================================================
 # Authentication Backends
 # =============================================================================
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Default Django backend
-    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
+    'django.contrib.auth.backends.ModelBackend',  # Default Django backend (admin login)
 ]
 
 ROOT_URLCONF = 'love_backend.urls'
@@ -111,7 +106,31 @@ USE_TZ = True
 # Static files
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# =============================================================================
+# AWS S3 Storage (for static files and media uploads)
+# =============================================================================
+AWS_S3_BUCKET_NAME = os.environ.get('AWS_S3_BUCKET_NAME', '')
+
+if AWS_S3_BUCKET_NAME:
+    # Use S3 for static files in production
+    AWS_S3_REGION_NAME = os.environ.get('AWS_REGION', 'eu-west-1')
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_S3_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_DEFAULT_ACL = None
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+
+    # Static files on S3
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+
+    # Media files on S3
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+else:
+    # Local development - use WhiteNoise
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -120,7 +139,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =============================================================================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'love_backend.auth_cognito.CognitoAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # Keep for Django admin
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -305,6 +325,17 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        'cloudwatch': {
+            'level': 'INFO',
+            'class': 'watchtower.CloudWatchLogHandler',
+            'log_group_name': os.environ.get('AWS_CLOUDWATCH_LOG_GROUP', '/ltgb/django'),
+            'log_stream_name': os.environ.get('AWS_CLOUDWATCH_LOG_STREAM', 'application'),
+            'formatter': 'verbose',
+        } if os.environ.get('AWS_CLOUDWATCH_LOG_GROUP') else {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -313,27 +344,32 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'cloudwatch'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console', 'cloudwatch', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
         'donations': {
-            'handlers': ['console'],
+            'handlers': ['console', 'cloudwatch'],
             'level': 'INFO',
             'propagate': False,
         },
         'stripe': {
-            'handlers': ['console'],
+            'handlers': ['console', 'cloudwatch'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
+# =============================================================================
+# AWS CloudWatch Configuration
+# =============================================================================
+AWS_CLOUDWATCH_LOG_GROUP = os.environ.get('AWS_CLOUDWATCH_LOG_GROUP', '')
 
 # =============================================================================
 # Sentry (Error Tracking)
@@ -358,37 +394,23 @@ if SENTRY_DSN and not DEBUG:
     )
 
 # =============================================================================
-# Django Allauth Configuration
+# AWS Cognito Configuration
 # =============================================================================
-ACCOUNT_LOGIN_ON_GET = True  # Auto-process social login without confirm page
-ACCOUNT_LOGOUT_ON_GET = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Skip email verification for social accounts
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+AWS_COGNITO_REGION = os.environ.get('AWS_COGNITO_REGION', 'eu-west-1')
+AWS_COGNITO_USER_POOL_ID = os.environ.get('AWS_COGNITO_USER_POOL_ID', '')
+AWS_COGNITO_APP_CLIENT_ID = os.environ.get('AWS_COGNITO_APP_CLIENT_ID', '')
 
-# New allauth v65+ settings (replacing deprecated ones)
-ACCOUNT_LOGIN_METHODS = {'email'}  # Login via email
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Email required, no username
+# =============================================================================
+# AWS General Configuration
+# =============================================================================
+AWS_REGION = os.environ.get('AWS_REGION', 'eu-west-1')
 
-# Redirect URLs after social login
-LOGIN_REDIRECT_URL = '/social-callback'  # Frontend handles this
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+# =============================================================================
+# AWS SQS (Donation notification queue - replaces Celery)
+# =============================================================================
+AWS_SQS_DONATION_QUEUE_URL = os.environ.get('AWS_SQS_DONATION_QUEUE_URL', '')
 
-# Social account settings
-SOCIALACCOUNT_AUTO_SIGNUP = True  # Auto-create account on first social login
-SOCIALACCOUNT_LOGIN_ON_GET = True  # Skip the intermediate "Continue" page - redirect directly to Google
-SOCIALACCOUNT_EMAIL_AUTHENTICATION = True  # Allow login via email match
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True  # Link social to existing account
-
-# Provider-specific settings (Google only)
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'APP': {
-            'client_id': os.environ.get('GOOGLE_CLIENT_ID', ''),
-            'secret': os.environ.get('GOOGLE_CLIENT_SECRET', ''),
-            'key': ''
-        }
-    },
-}
+# =============================================================================
+# AWS DynamoDB (Activity log)
+# =============================================================================
+AWS_DYNAMODB_ACTIVITY_TABLE = os.environ.get('AWS_DYNAMODB_ACTIVITY_TABLE', 'ltgb-activity-log')
