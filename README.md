@@ -30,7 +30,7 @@
 ---
 
 ## **Concept Overview**  
-**Theme:** A platform where users can explore and donate to various charity organizations tied to a one's values.  
+**Theme:** A platform where users can explore and donate to various charity organizations.  
 **Objective:**  
 - Share causes by inspiring generosity.  
 - Provide a seamless user experience for exploring charities and donating.  
