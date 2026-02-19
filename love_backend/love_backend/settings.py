@@ -221,7 +221,7 @@ if REDIS_URL:
                 'RETRY_ON_TIMEOUT': True,
                 'MAX_CONNECTIONS': 50,
             },
-            'KEY_PREFIX': 'ltgb',
+            'KEY_PREFIX': 'lia',
         }
     }
     SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
@@ -275,7 +275,7 @@ else:
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Love That Gives Back <noreply@lovethatgivesback.com>')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Love In Action <noreply@loveinaction.com>')
 
 # =============================================================================
 # Security Headers (Production)
@@ -328,7 +328,7 @@ LOGGING = {
         'cloudwatch': {
             'level': 'INFO',
             'class': 'watchtower.CloudWatchLogHandler',
-            'log_group_name': os.environ.get('AWS_CLOUDWATCH_LOG_GROUP', '/ltgb/django'),
+            'log_group_name': os.environ.get('AWS_CLOUDWATCH_LOG_GROUP', '/lia/django'),
             'log_stream_name': os.environ.get('AWS_CLOUDWATCH_LOG_STREAM', 'application'),
             'formatter': 'verbose',
         } if os.environ.get('AWS_CLOUDWATCH_LOG_GROUP') else {
@@ -413,4 +413,4 @@ AWS_SQS_DONATION_QUEUE_URL = os.environ.get('AWS_SQS_DONATION_QUEUE_URL', '')
 # =============================================================================
 # AWS DynamoDB (Activity log)
 # =============================================================================
-AWS_DYNAMODB_ACTIVITY_TABLE = os.environ.get('AWS_DYNAMODB_ACTIVITY_TABLE', 'ltgb-activity-log')
+AWS_DYNAMODB_ACTIVITY_TABLE = os.environ.get('AWS_DYNAMODB_ACTIVITY_TABLE', 'lia-activity-log')

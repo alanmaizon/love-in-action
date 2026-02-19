@@ -16,7 +16,7 @@ function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">
-          Love That Gives Back
+          Love In Action
         </Link>
         <button
           className="navbar-toggler"
@@ -60,7 +60,7 @@ function Footer() {
       <div className="container">
         <div className="row">
           <div className="col-md-4 mb-3 mb-md-0">
-            <h5 className="fw-bold">Love That Gives Back</h5>
+            <h5 className="fw-bold">Love In Action</h5>
             <p className="small text-light mb-0">
               Celebrating life's moments through charitable giving.
             </p>
@@ -86,7 +86,7 @@ function Footer() {
         <div className="row align-items-center">
           <div className="col-md-6 text-center text-md-start">
             <small className="text-light">
-              &copy; {new Date().getFullYear()} Love That Gives Back. All rights reserved.
+              &copy; {new Date().getFullYear()} Love In Action. All rights reserved.
             </small>
           </div>
           <div className="col-md-6 text-center text-md-end">

@@ -28,9 +28,9 @@ describe('Layout', () => {
     renderLayout();
 
     // Brand name appears in both navbar and footer
-    const brandElements = screen.getAllByText('Love That Gives Back');
+    const brandElements = screen.getAllByText('Love In Action');
     expect(brandElements.length).toBeGreaterThan(0);
-    expect(screen.getByRole('link', { name: 'Love That Gives Back' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Love In Action' })).toHaveAttribute('href', '/');
   });
 
   it('shows charities link', () => {

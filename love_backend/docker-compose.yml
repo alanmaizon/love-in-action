@@ -16,8 +16,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: ltgb_db
-      POSTGRES_USER: ltgb_user
+      POSTGRES_DB: lia_db
+      POSTGRES_USER: lia_user
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     restart: unless-stopped
 

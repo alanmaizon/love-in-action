@@ -11,14 +11,14 @@ export default function PrivacyPolicy() {
               <section className="mb-4">
                 <h2 className="h4">1. Introduction</h2>
                 <p>
-                  Love That Gives Back ("we", "us", "our") is committed to protecting
+                  Love In Action ("we", "us", "our") is committed to protecting
                   your privacy. This policy explains how we collect, use, and protect
                   your personal data in compliance with the General Data Protection
                   Regulation (GDPR) and Irish data protection law.
                 </p>
                 <p>
-                  <strong>Data Controller:</strong> Alan Maizon, operating as Love That
-                  Gives Back, based in Ireland.
+                  <strong>Data Controller:</strong> Alan Maizon, operating as Love In
+                  Action, based in Ireland.
                 </p>
               </section>
 

@@ -18,7 +18,7 @@ Exam concepts:
 - Secrets Manager costs $0.40/secret/month but can auto-rotate
 
 How it works:
-1. Store secrets in Parameter Store: /ltgb/production/STRIPE_SECRET_KEY
+1. Store secrets in Parameter Store: /lia/production/STRIPE_SECRET_KEY
 2. At Django startup, fetch parameters by path prefix
 3. Inject them into os.environ so settings.py reads them normally
 4. Falls back to .env file for local development
@@ -30,15 +30,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def load_parameters_from_ssm(prefix='/ltgb/production'):
+def load_parameters_from_ssm(prefix='/lia/production'):
     """
     Load all parameters under a prefix from AWS SSM Parameter Store
     and inject them into os.environ.
 
     Parameters are stored as:
-        /ltgb/production/SECRET_KEY -> env var SECRET_KEY
-        /ltgb/production/STRIPE_SECRET_KEY -> env var STRIPE_SECRET_KEY
-        /ltgb/production/DATABASE_URL -> env var DATABASE_URL
+        /lia/production/SECRET_KEY -> env var SECRET_KEY
+        /lia/production/STRIPE_SECRET_KEY -> env var STRIPE_SECRET_KEY
+        /lia/production/DATABASE_URL -> env var DATABASE_URL
 
     Only runs when USE_AWS_PARAMETER_STORE=true is set.
     Falls back gracefully if SSM is unavailable.
@@ -81,7 +81,7 @@ def load_parameters_from_ssm(prefix='/ltgb/production'):
         # Inject into environment
         loaded = 0
         for param in parameters:
-            # Convert /ltgb/production/SECRET_KEY -> SECRET_KEY
+            # Convert /lia/production/SECRET_KEY -> SECRET_KEY
             name = param['Name'].split('/')[-1]
             value = param['Value']
 

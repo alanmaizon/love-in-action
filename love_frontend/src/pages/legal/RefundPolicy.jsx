@@ -11,7 +11,7 @@ export default function RefundPolicy() {
               <section className="mb-4">
                 <h2 className="h4">Overview</h2>
                 <p>
-                  Love That Gives Back facilitates donations to registered Irish
+                  Love In Action facilitates donations to registered Irish
                   charities. Because donations are charitable gifts, our refund
                   policy differs from typical retail purchases.
                 </p>
@@ -101,7 +101,7 @@ export default function RefundPolicy() {
               <section className="mb-4">
                 <h2 className="h4">Platform Tips</h2>
                 <p>
-                  If you added an optional tip to support Love That Gives Back,
+                  If you added an optional tip to support Love In Action,
                   this follows the same refund policy as donations. Tips are
                   generally non-refundable once processed.
                 </p>

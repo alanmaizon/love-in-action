@@ -37,8 +37,8 @@ logger.setLevel(logging.INFO)
 # Initialize SES client
 ses_client = boto3.client('ses', region_name=os.environ.get('AWS_REGION', 'eu-west-1'))
 
-FROM_EMAIL = os.environ.get('SES_FROM_EMAIL', 'noreply@lovethatgivesback.com')
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://lovethatgivesback.com')
+FROM_EMAIL = os.environ.get('SES_FROM_EMAIL', 'noreply@loveinaction.com')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://loveinaction.com')
 
 
 def handler(event, context):
@@ -98,7 +98,7 @@ def send_donor_confirmation(donation_id):
                             f'Thank you for your generous donation!\n\n'
                             f'Your donation is making a difference.\n\n'
                             f'With gratitude,\n'
-                            f'Love That Gives Back'
+                            f'Love In Action'
                         ),
                         'Charset': 'UTF-8',
                     },
@@ -106,7 +106,7 @@ def send_donor_confirmation(donation_id):
                         'Data': (
                             f'<h2>Thank you for your generous donation!</h2>'
                             f'<p>Your donation is making a difference.</p>'
-                            f'<p>With gratitude,<br>Love That Gives Back</p>'
+                            f'<p>With gratitude,<br>Love In Action</p>'
                         ),
                         'Charset': 'UTF-8',
                     },
@@ -138,7 +138,7 @@ def send_host_notification(donation_id):
                             f'Great news! You\'ve received a new donation.\n\n'
                             f'View all donations in your dashboard:\n'
                             f'{FRONTEND_URL}/dashboard\n\n'
-                            f'Love That Gives Back'
+                            f'Love In Action'
                         ),
                         'Charset': 'UTF-8',
                     },
