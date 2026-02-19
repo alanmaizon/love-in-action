@@ -259,5 +259,3 @@ flowchart TD
 
 ---
 
-## Module 6 - UCD PA - Alan Maizon
-**[Github (Public Repository)](https://github.com/alanmaizon/love/)**
