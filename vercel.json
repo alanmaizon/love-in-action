@@ -1,0 +1,6 @@
+{
+  "framework": "vite",
+  "installCommand": "cd love_frontend && npm install",
+  "buildCommand": "cd love_frontend && npm run build",
+  "outputDirectory": "love_frontend/dist"
+}
