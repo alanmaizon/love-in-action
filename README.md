@@ -30,9 +30,9 @@
 ---
 
 ## **Concept Overview**  
-**Theme:** A platform where users can explore and donate to various charity organizations tied to a couple's values.  
+**Theme:** A platform where users can explore and donate to various charity organizations tied to a one's values.  
 **Objective:**  
-- Celebrate love by inspiring generosity.  
+- Share causes by inspiring generosity.  
 - Provide a seamless user experience for exploring charities and donating.  
 
 ---
