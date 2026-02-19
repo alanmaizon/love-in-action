@@ -1,4 +1,4 @@
-# CLAUDE.md - Love That Gives Back Integration Phase
+# CLAUDE.md - Love In Action Integration Phase
 
 ## Current Status
 
@@ -652,11 +652,11 @@ python manage.py migrate
    - `SECRET_KEY` (generate new one for production)
    - `DEBUG=False`
    - `DATABASE_URL` (from Render PostgreSQL)
-   - `ALLOWED_HOSTS=your-backend-url.onrender.com,lovethatgivesback.com`
-   - `CORS_ALLOWED_ORIGINS=https://lovethatgivesback.com`
+   - `ALLOWED_HOSTS=your-backend-url.onrender.com,loveinaction.com`
+   - `CORS_ALLOWED_ORIGINS=https://loveinaction.com`
    - `STRIPE_SECRET_KEY=sk_live_xxx`
    - `STRIPE_WEBHOOK_SECRET=whsec_xxx`
-   - `FRONTEND_URL=https://lovethatgivesback.com`
+   - `FRONTEND_URL=https://loveinaction.com`
 
 2. Build command: `pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput`
 

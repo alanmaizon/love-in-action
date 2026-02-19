@@ -20,7 +20,7 @@ export default function CookiePolicy() {
               <section className="mb-4">
                 <h2 className="h4">How We Use Cookies</h2>
                 <p>
-                  Love That Gives Back uses cookies to provide essential functionality
+                  Love In Action uses cookies to provide essential functionality
                   and improve your experience. We keep cookie usage to a minimum.
                 </p>
               </section>

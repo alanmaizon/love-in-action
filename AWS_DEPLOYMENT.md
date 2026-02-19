@@ -5,8 +5,8 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        Route 53                              │
-│         lovethatgivesback.com → CloudFront                  │
-│         api.lovethatgivesback.com → EC2                     │
+│         loveinaction.com → CloudFront                       │
+│         api.loveinaction.com → EC2                          │
 └─────────────────────────────────────────────────────────────┘
                               │
         ┌─────────────────────┴─────────────────────┐
@@ -39,21 +39,21 @@
 2. Settings:
    - **Engine**: PostgreSQL 15
    - **Template**: Free tier (or Production for more resources)
-   - **DB Instance Identifier**: `ltgb-database`
-   - **Master Username**: `ltgb_user`
+   - **DB Instance Identifier**: `lia-database`
+   - **Master Username**: `lia_user`
    - **Master Password**: Generate a secure password
    - **DB Instance Class**: `db.t3.micro` (free tier) or `db.t3.small`
    - **Storage**: 20 GB GP2
    - **VPC**: Default VPC
    - **Public Access**: No (for security)
-   - **Database Name**: `ltgb_db`
+   - **Database Name**: `lia_db`
 
-3. Note the **Endpoint** (e.g., `ltgb-database.xxxxx.us-east-1.rds.amazonaws.com`)
+3. Note the **Endpoint** (e.g., `lia-database.xxxxx.us-east-1.rds.amazonaws.com`)
 
 ### 1.2 Create Security Group for RDS
 
 1. Go to **EC2 → Security Groups → Create Security Group**
-2. Name: `ltgb-rds-sg`
+2. Name: `lia-rds-sg`
 3. Inbound Rules:
    - Type: PostgreSQL (5432)
    - Source: Your EC2 security group (create this first, or update later)
@@ -66,7 +66,7 @@
 
 1. Go to **AWS Console → EC2 → Launch Instance**
 2. Settings:
-   - **Name**: `ltgb-backend`
+   - **Name**: `lia-backend`
    - **AMI**: Amazon Linux 2023 or Ubuntu 22.04
    - **Instance Type**: `t3.small` (2 vCPU, 2GB RAM) - minimum for Django
    - **Key Pair**: Create new or use existing
@@ -76,7 +76,7 @@
 
 ### 2.2 Security Group Rules (EC2)
 
-Create security group `ltgb-ec2-sg`:
+Create security group `lia-ec2-sg`:
 
 | Type  | Port | Source          | Description       |
 |-------|------|-----------------|-------------------|
@@ -147,8 +147,8 @@ exit
 ssh -i your-key.pem ec2-user@your-elastic-ip
 
 # Clone repository
-git clone https://github.com/yourusername/lovethatgivesback.git
-cd lovethatgivesback/love_backend
+git clone https://github.com/yourusername/loveinaction.git
+cd loveinaction/love_backend
 
 # Create production environment file
 cp .env.production.example .env.production
@@ -188,7 +188,7 @@ sudo apt install certbot -y
 docker-compose stop nginx
 
 # Get certificate
-sudo certbot certonly --standalone -d api.lovethatgivesback.com
+sudo certbot certonly --standalone -d api.loveinaction.com
 
 # Start nginx
 docker-compose start nginx
@@ -211,7 +211,7 @@ sudo crontab -e
 ### 5.1 Create S3 Bucket
 
 1. Go to **S3 → Create Bucket**
-2. Name: `lovethatgivesback-frontend`
+2. Name: `loveinaction-frontend`
 3. Region: Same as EC2
 4. Uncheck "Block all public access"
 5. Enable static website hosting:
@@ -229,7 +229,7 @@ sudo crontab -e
             "Effect": "Allow",
             "Principal": "*",
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::lovethatgivesback-frontend/*"
+            "Resource": "arn:aws:s3:::loveinaction-frontend/*"
         }
     ]
 }
@@ -242,25 +242,25 @@ sudo crontab -e
 cd love_frontend
 
 # Create production .env
-echo "VITE_API_URL=https://api.lovethatgivesback.com" > .env.production
+echo "VITE_API_URL=https://api.loveinaction.com" > .env.production
 echo "VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxx" >> .env.production
 
 # Build
 npm run build
 
 # Upload to S3
-aws s3 sync dist/ s3://lovethatgivesback-frontend --delete
+aws s3 sync dist/ s3://loveinaction-frontend --delete
 ```
 
 ### 5.4 Create CloudFront Distribution
 
 1. Go to **CloudFront → Create Distribution**
 2. Settings:
-   - **Origin Domain**: `lovethatgivesback-frontend.s3.amazonaws.com`
+   - **Origin Domain**: `loveinaction-frontend.s3.amazonaws.com`
    - **Viewer Protocol Policy**: Redirect HTTP to HTTPS
    - **Allowed HTTP Methods**: GET, HEAD
    - **Cache Policy**: CachingOptimized
-   - **Alternate Domain Names**: `lovethatgivesback.com`, `www.lovethatgivesback.com`
+   - **Alternate Domain Names**: `loveinaction.com`, `www.loveinaction.com`
    - **SSL Certificate**: Request or import in ACM
    - **Default Root Object**: `index.html`
 
@@ -276,23 +276,23 @@ aws s3 sync dist/ s3://lovethatgivesback-frontend --delete
 ### 6.1 Create Hosted Zone
 
 1. Go to **Route 53 → Create Hosted Zone**
-2. Domain: `lovethatgivesback.com`
+2. Domain: `loveinaction.com`
 3. Update nameservers with your domain registrar
 
 ### 6.2 Create DNS Records
 
 | Name                          | Type  | Value                              |
 |-------------------------------|-------|------------------------------------|
-| lovethatgivesback.com         | A     | CloudFront distribution (Alias)   |
-| www.lovethatgivesback.com     | A     | CloudFront distribution (Alias)   |
-| api.lovethatgivesback.com     | A     | EC2 Elastic IP                    |
+| loveinaction.com                | A     | CloudFront distribution (Alias)   |
+| www.loveinaction.com            | A     | CloudFront distribution (Alias)   |
+| api.loveinaction.com            | A     | EC2 Elastic IP                    |
 
 ---
 
 ## Step 7: Configure Stripe Webhook
 
 1. Go to **Stripe Dashboard → Webhooks**
-2. Add endpoint: `https://api.lovethatgivesback.com/api/webhooks/stripe/`
+2. Add endpoint: `https://api.loveinaction.com/api/webhooks/stripe/`
 3. Select events:
    - `checkout.session.completed`
    - `checkout.session.expired`
@@ -319,7 +319,7 @@ docker-compose logs -f nginx
 ### Update Application
 
 ```bash
-cd lovethatgivesback/love_backend
+cd loveinaction/love_backend
 git pull origin main
 docker-compose up -d --build
 docker-compose exec web python manage.py migrate
@@ -330,7 +330,7 @@ docker-compose exec web python manage.py migrate
 ```bash
 # Create RDS snapshot via AWS Console
 # Or export manually:
-docker-compose exec db pg_dump -U ltgb_user ltgb_db > backup_$(date +%Y%m%d).sql
+docker-compose exec db pg_dump -U lia_user lia_db > backup_$(date +%Y%m%d).sql
 ```
 
 ---

@@ -9,15 +9,15 @@ export default function TermsOfService() {
           <div className="card">
             <div className="card-body">
               <section className="mb-4">
-                <h2 className="h4">1. About Love That Gives Back</h2>
+                <h2 className="h4">1. About Love In Action</h2>
                 <p>
-                  Love That Gives Back is a donation platform operated by Alan Maizon,
+                  Love In Action is a donation platform operated by Alan Maizon,
                   a sole trader based in Ireland. We provide a service that allows event
                   hosts to create celebration pages where guests can donate to curated
                   charities instead of giving traditional gifts.
                 </p>
                 <p className="alert alert-info">
-                  <strong>Important:</strong> Love That Gives Back is a platform that
+                  <strong>Important:</strong> Love In Action is a platform that
                   facilitates donations to registered charities. We are NOT a charity
                   ourselves. Donations made through our platform go directly to the
                   charities you select.
@@ -103,7 +103,7 @@ export default function TermsOfService() {
               <section className="mb-4">
                 <h2 className="h4">8. Intellectual Property</h2>
                 <p>
-                  The Love That Gives Back name, logo, and website design are our
+                  The Love In Action name, logo, and website design are our
                   property. Content you upload (photos, text) remains yours, but you
                   grant us a licence to display it on the platform for your event.
                 </p>

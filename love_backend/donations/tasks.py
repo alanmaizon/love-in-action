@@ -35,7 +35,7 @@ Donation Details:
 Your donation is making a difference. Thank you for being part of {donation.event.title}.
 
 With gratitude,
-Love That Gives Back
+Love In Action
 """
 
         send_mail(
@@ -84,7 +84,7 @@ Total raised so far: €{donation.event.total_raised()}
 
 View all donations in your dashboard.
 
-Love That Gives Back
+Love In Action
 """
 
         send_mail(

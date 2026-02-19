@@ -1,4 +1,4 @@
-# CLAUDE.md - Love That Gives Back Platform
+# CLAUDE.md - Love In Action Platform
 
 ## Quick Start
 
@@ -23,7 +23,7 @@ Open http://localhost:5173 for the frontend and http://localhost:8000/admin for 
 
 ## Project Overview
 
-**Love That Gives Back (LTGB)** is a life events donation platform where hosts create celebration pages and guests donate to curated charities instead of giving traditional gifts.
+**Love In Action (LIA)** is a life events donation platform where hosts create celebration pages and guests donate to curated charities instead of giving traditional gifts.
 
 ### Supported Event Types
 - **Wedding** — Couples redirect gifts to causes they care about
@@ -55,7 +55,7 @@ Open http://localhost:5173 for the frontend and http://localhost:8000/admin for 
 ### Infrastructure
 - **Hosting:** Render (backend + frontend)
 - **Database:** Render PostgreSQL (or existing)
-- **Domain:** lovethatgivesback.com (existing)
+- **Domain:** loveinaction.com (existing)
 - **Email:** SendGrid or Django's console backend for MVP
 
 ---
@@ -574,19 +574,19 @@ love_frontend/
 DEBUG=False
 SECRET_KEY=your-secret-key
 DATABASE_URL=postgres://user:pass@host:5432/dbname
-ALLOWED_HOSTS=lovethatgivesback.com,localhost
-CORS_ALLOWED_ORIGINS=https://lovethatgivesback.com,http://localhost:3000
+ALLOWED_HOSTS=loveinaction.com,localhost
+CORS_ALLOWED_ORIGINS=https://loveinaction.com,http://localhost:3000
 
 STRIPE_SECRET_KEY=sk_live_xxx
 STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 
-FRONTEND_URL=https://lovethatgivesback.com
+FRONTEND_URL=https://loveinaction.com
 ```
 
 ### Frontend (.env)
 ```
-VITE_API_URL=https://api.lovethatgivesback.com
+VITE_API_URL=https://api.loveinaction.com
 VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 ```
 

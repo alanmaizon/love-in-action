@@ -1,4 +1,4 @@
-# **❤️ Love That Gives Back**
+# **❤️ Love In Action**
 
 - [Concept Overview](#concept-overview)
 - [Front-End Features](#front-end-features)
@@ -175,7 +175,7 @@ erDiagram
 
 ```mermaid
 mindmap
-  root((Love That Gives Back))
+  root((Love In Action))
       About / How It Works (About Us)
       Login Page (Login / Logout)
       Home Page (Home)

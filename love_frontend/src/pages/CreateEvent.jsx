@@ -208,7 +208,7 @@ export default function CreateEvent() {
                     <div className="mb-3">
                       <label className="form-label">URL Slug</label>
                       <div className="input-group">
-                        <span className="input-group-text">lovethatgivesback.com/event/</span>
+                        <span className="input-group-text">loveinaction.com/event/</span>
                         <input
                           type="text"
                           className="form-control"
